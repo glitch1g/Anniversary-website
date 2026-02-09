@@ -2317,6 +2317,61 @@
       color: var(--accent);
     }
 
+    /* Sub-menu for Edit */
+    .catatan-dropdown-item.has-submenu {
+      position: relative;
+      justify-content: space-between;
+    }
+
+    .catatan-submenu {
+      position: absolute;
+      left: 100%;
+      top: 0;
+      background: var(--card-bg);
+      border: 2px solid rgba(122, 162, 255, 0.3);
+      border-radius: 12px;
+      padding: 8px;
+      min-width: 180px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: none;
+      margin-left: 5px;
+    }
+
+    .catatan-dropdown-item.has-submenu:hover .catatan-submenu {
+      display: block;
+    }
+
+    .catatan-submenu-item {
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .catatan-submenu-item:hover {
+      background: rgba(122, 162, 255, 0.2);
+    }
+
+    /* Mobile: submenu muncul di bawah instead of samping */
+    @media (max-width: 768px) {
+      .catatan-submenu {
+        position: relative;
+        left: 0;
+        margin-left: 0;
+        margin-top: 5px;
+        display: none;
+      }
+
+      .catatan-dropdown-item.has-submenu.active .catatan-submenu {
+        display: block;
+      }
+    }
+
     /* ============ NEW: Filters ============ */
     .catatan-filters {
       background: linear-gradient(135deg, rgba(122, 162, 255, 0.08), rgba(155, 125, 255, 0.08));
@@ -3213,8 +3268,8 @@
                 <label>👤 Nama:</label>
                 <select id="catatanAuthor" class="catatan-author-select">
                   <option value="">-- Pilih Nama --</option>
-                  <option value="Kamu">Kamu</option>
-                  <option value="Aku">Aku</option>
+                  <option value="BF">BF (Boyfriend)</option>
+                  <option value="GF">GF (Girlfriend)</option>
                 </select>
               </div>
               
@@ -3262,8 +3317,8 @@
               <label>👤 Penulis</label>
               <select id="filterAuthor" class="filter-select" onchange="applyFilters()">
                 <option value="">Semua</option>
-                <option value="Kamu">Kamu</option>
-                <option value="Aku">Aku</option>
+                <option value="BF">BF</option>
+                <option value="GF">GF</option>
               </select>
             </div>
             
@@ -3291,10 +3346,13 @@
 
         <div class="game-instructions" style="margin-top: 30px;">
           <h4>💡 Tentang Catatan Bersama:</h4>
+          <p>• Pilih nama (BF atau GF) sebelum menulis catatan</p>
           <p>• Tulis catatan, pesan, atau reminder untuk kita berdua</p>
           <p>• Semua catatan tersinkron secara real-time dengan Firebase</p>
-          <p>• Klik ikon 🗑️ untuk menghapus catatan</p>
+          <p>• Klik ikon ⋮ (titik tiga) untuk Copy, Edit, atau Hapus catatan</p>
+          <p>• Filter catatan berdasarkan Bulan, Tahun, atau Penulis</p>
           <p>• Maksimal 500 karakter per catatan</p>
+          <p>• Tekan Ctrl+Enter untuk kirim catatan lebih cepat</p>
         </div>
       </div>
     </div>
@@ -5783,18 +5841,34 @@
     displayData.forEach(catatan => {
       const item = document.createElement('div');
       item.className = 'catatan-item';
+      
+      // Tentukan icon berdasarkan author
+      const authorIcon = catatan.author === 'BF' ? '👨' : '👩';
+      
       item.innerHTML = `
         <div class="catatan-header">
           <div class="catatan-author-badge">
-            ${catatan.author === 'Kamu' ? '👤' : '❤️'} ${escapeHtml(catatan.author || 'Anonymous')}
+            ${authorIcon} ${escapeHtml(catatan.author || 'Anonymous')}
           </div>
           <div style="display: flex; align-items: center; gap: 10px;">
             <div class="catatan-timestamp">${catatan.date} • ${catatan.time}</div>
             <div class="catatan-menu">
               <button class="catatan-menu-btn" onclick="toggleCatatanMenu('${catatan.id}')">⋮</button>
               <div class="catatan-dropdown" id="menu-${catatan.id}">
-                <div class="catatan-dropdown-item" onclick="editCatatan('${catatan.id}')">
+                <div class="catatan-dropdown-item" onclick="copyCatatan('${catatan.id}')">
+                  📋 Copy
+                </div>
+                <div class="catatan-dropdown-item has-submenu" onclick="toggleSubmenu(event, '${catatan.id}')">
                   ✏️ Edit
+                  <span style="margin-left: auto;">▶</span>
+                  <div class="catatan-submenu" id="submenu-${catatan.id}">
+                    <div class="catatan-submenu-item" onclick="editCatatanAuthor('${catatan.id}')">
+                      👤 Edit Penulis
+                    </div>
+                    <div class="catatan-submenu-item" onclick="editCatatanText('${catatan.id}')">
+                      📝 Edit Catatan
+                    </div>
+                  </div>
                 </div>
                 <div class="catatan-dropdown-item delete" onclick="deleteCatatan('${catatan.id}')">
                   🗑️ Hapus
@@ -5891,19 +5965,146 @@
     menu.classList.toggle('show');
   }
   
+  // Toggle submenu untuk Edit (untuk mobile)
+  function toggleSubmenu(event, id) {
+    // Untuk desktop, hover sudah handle submenu
+    // Untuk mobile, kita perlu toggle manual
+    if (window.innerWidth <= 768) {
+      event.stopPropagation();
+      const submenuParent = event.currentTarget;
+      submenuParent.classList.toggle('active');
+    }
+  }
+  
   // Close menus when clicking outside
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.catatan-menu')) {
       document.querySelectorAll('.catatan-dropdown').forEach(menu => {
         menu.classList.remove('show');
       });
+      document.querySelectorAll('.has-submenu').forEach(item => {
+        item.classList.remove('active');
+      });
     }
   });
   
-  // Edit catatan
-  function editCatatan(id) {
+  // Copy catatan to clipboard
+  async function copyCatatan(id) {
     // Close menu
     toggleCatatanMenu(id);
+    
+    // Get catatan data
+    database.ref('catatan/' + id).once('value', async (snapshot) => {
+      if (!snapshot.exists()) return;
+      
+      const data = snapshot.val();
+      const textToCopy = data.text;
+      
+      try {
+        // Try modern clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(textToCopy);
+          showNotification('📋 Catatan berhasil dicopy!');
+        } else {
+          // Fallback for older browsers
+          const textarea = document.createElement('textarea');
+          textarea.value = textToCopy;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          showNotification('📋 Catatan berhasil dicopy!');
+        }
+      } catch (error) {
+        console.error('Error copying:', error);
+        showNotification('❌ Gagal copy catatan!');
+      }
+    });
+  }
+  
+  // Edit catatan AUTHOR (Penulis)
+  function editCatatanAuthor(id) {
+    // Close all menus
+    document.querySelectorAll('.catatan-dropdown').forEach(menu => {
+      menu.classList.remove('show');
+    });
+    
+    // Get catatan data
+    database.ref('catatan/' + id).once('value', (snapshot) => {
+      if (!snapshot.exists()) return;
+      
+      const data = snapshot.val();
+      
+      // Create edit modal for author
+      const modal = document.createElement('div');
+      modal.className = 'edit-modal';
+      modal.innerHTML = `
+        <div class="edit-modal-content">
+          <div class="edit-modal-header">
+            <h3>👤 Edit Penulis</h3>
+            <button class="edit-modal-close" onclick="this.closest('.edit-modal').remove()">×</button>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 10px; font-size: 14px; opacity: 0.8;">Pilih Penulis:</label>
+            <select id="editAuthor-${id}" class="catatan-author-select" style="width: 100%; padding: 12px 15px; font-size: 15px;">
+              <option value="BF" ${data.author === 'BF' ? 'selected' : ''}>BF (Boyfriend)</option>
+              <option value="GF" ${data.author === 'GF' ? 'selected' : ''}>GF (Girlfriend)</option>
+            </select>
+          </div>
+          <div class="edit-modal-actions">
+            <button class="edit-modal-btn cancel" onclick="this.closest('.edit-modal').remove()">Batal</button>
+            <button class="edit-modal-btn save" onclick="saveCatatanAuthor('${id}')">💾 Simpan</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Focus select
+      document.getElementById('editAuthor-' + id).focus();
+      
+      // Close on backdrop click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    });
+  }
+  
+  // Save catatan author edit
+  async function saveCatatanAuthor(id) {
+    const select = document.getElementById('editAuthor-' + id);
+    const newAuthor = select.value;
+    
+    if (!newAuthor) {
+      showNotification('⚠️ Pilih penulis!');
+      return;
+    }
+    
+    try {
+      await database.ref('catatan/' + id).update({
+        author: newAuthor,
+        editedAt: Date.now(),
+        editedDate: new Date().toLocaleString('id-ID')
+      });
+      
+      // Close modal
+      document.querySelector('.edit-modal').remove();
+      
+      showNotification('✅ Penulis berhasil diupdate!');
+    } catch (error) {
+      console.error('Error updating author:', error);
+      showNotification('❌ Gagal mengupdate penulis!');
+    }
+  }
+  
+  // Edit catatan TEXT (Isi Catatan)
+  function editCatatanText(id) {
+    // Close all menus
+    document.querySelectorAll('.catatan-dropdown').forEach(menu => {
+      menu.classList.remove('show');
+    });
     
     // Get catatan data
     database.ref('catatan/' + id).once('value', (snapshot) => {
@@ -5917,13 +6118,13 @@
       modal.innerHTML = `
         <div class="edit-modal-content">
           <div class="edit-modal-header">
-            <h3>✏️ Edit Catatan</h3>
+            <h3>📝 Edit Catatan</h3>
             <button class="edit-modal-close" onclick="this.closest('.edit-modal').remove()">×</button>
           </div>
           <textarea class="edit-modal-textarea" id="editText-${id}" maxlength="500">${escapeHtml(data.text)}</textarea>
           <div class="edit-modal-actions">
             <button class="edit-modal-btn cancel" onclick="this.closest('.edit-modal').remove()">Batal</button>
-            <button class="edit-modal-btn save" onclick="saveCatatanEdit('${id}')">💾 Simpan</button>
+            <button class="edit-modal-btn save" onclick="saveCatatanText('${id}')">💾 Simpan</button>
           </div>
         </div>
       `;
@@ -5940,8 +6141,8 @@
     });
   }
   
-  // Save catatan edit
-  async function saveCatatanEdit(id) {
+  // Save catatan text edit
+  async function saveCatatanText(id) {
     const textarea = document.getElementById('editText-' + id);
     const newText = textarea.value.trim();
     
