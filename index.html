@@ -3052,6 +3052,152 @@
       border: 1px solid rgba(122, 162, 255, 0.3);
     }
 
+
+    /* ============ FOLDER VIEW CARDS ============ */
+    .folder-view-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .folder-view-card {
+      background: linear-gradient(135deg, rgba(155, 125, 255, 0.12), rgba(122, 162, 255, 0.08));
+      border: 2px solid rgba(155, 125, 255, 0.25);
+      border-radius: 18px;
+      padding: 22px 16px 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .folder-view-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(155, 125, 255, 0.15), rgba(122, 162, 255, 0.15));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .folder-view-card:hover {
+      transform: translateY(-5px) scale(1.02);
+      border-color: var(--secondary);
+      box-shadow: 0 12px 35px rgba(155, 125, 255, 0.35);
+    }
+
+    .folder-view-card:hover::before { opacity: 1; }
+    .folder-view-card:active { transform: translateY(-2px) scale(0.99); }
+
+    .folder-view-icon {
+      font-size: 42px;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+
+    .folder-view-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--light);
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+      word-break: break-word;
+      line-height: 1.3;
+    }
+
+    .folder-view-count {
+      font-size: 12px;
+      color: var(--secondary);
+      opacity: 0.85;
+      position: relative;
+      z-index: 1;
+      background: rgba(155, 125, 255, 0.15);
+      border-radius: 20px;
+      padding: 3px 10px;
+      display: inline-block;
+    }
+
+    .folder-view-card.no-folder {
+      background: linear-gradient(135deg, rgba(122, 162, 255, 0.1), rgba(100, 100, 140, 0.08));
+      border-color: rgba(122, 162, 255, 0.2);
+    }
+
+    .folder-view-card.no-folder:hover {
+      border-color: var(--primary);
+      box-shadow: 0 12px 35px rgba(122, 162, 255, 0.3);
+    }
+
+    /* ============ BREADCRUMB ============ */
+    .catatan-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 10px 16px;
+      background: rgba(122, 162, 255, 0.07);
+      border: 1px solid rgba(122, 162, 255, 0.15);
+      border-radius: 12px;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb-item {
+      font-size: 14px;
+      color: var(--primary);
+      cursor: pointer;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+      font-weight: 600;
+    }
+
+    .breadcrumb-item:hover { opacity: 1; text-decoration: underline; }
+
+    .breadcrumb-sep { font-size: 13px; opacity: 0.4; }
+
+    .breadcrumb-current {
+      font-size: 14px;
+      color: var(--light);
+      font-weight: 700;
+    }
+
+    /* ============ VIEW TOGGLE ============ */
+    .catatan-view-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .view-toggle-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 2px solid rgba(122, 162, 255, 0.25);
+      background: transparent;
+      color: var(--light);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0.6;
+    }
+
+    .view-toggle-btn.active {
+      background: linear-gradient(135deg, rgba(122, 162, 255, 0.2), rgba(155, 125, 255, 0.2));
+      border-color: var(--primary);
+      opacity: 1;
+      box-shadow: 0 4px 15px rgba(122, 162, 255, 0.2);
+    }
+
+    .view-toggle-btn:hover:not(.active) {
+      opacity: 0.85;
+      border-color: rgba(122, 162, 255, 0.5);
+    }
+
+
   </style>
 </head>
 
@@ -3832,60 +3978,103 @@
             </div>
           </div>
 
-          <!-- NEW: Filters -->
-          <div class="catatan-filters">
-            <div class="filter-group">
-              <label>📅 Bulan</label>
-              <select id="filterMonth" class="filter-select" onchange="applyFilters()">
-                <option value="">Semua Bulan</option>
-                <option value="01">Januari</option>
-                <option value="02">Februari</option>
-                <option value="03">Maret</option>
-                <option value="04">April</option>
-                <option value="05">Mei</option>
-                <option value="06">Juni</option>
-                <option value="07">Juli</option>
-                <option value="08">Agustus</option>
-                <option value="09">September</option>
-                <option value="10">Oktober</option>
-                <option value="11">November</option>
-                <option value="12">Desember</option>
-              </select>
-            </div>
-            
-            <div class="filter-group">
-              <label>📆 Tahun</label>
-              <select id="filterYear" class="filter-select" onchange="applyFilters()">
-                <option value="">Semua Tahun</option>
-              </select>
-            </div>
-            
-            <div class="filter-group">
-              <label>👤 Penulis</label>
-              <select id="filterAuthor" class="filter-select" onchange="applyFilters()">
-                <option value="">Semua</option>
-                <option value="BF">BF</option>
-                <option value="GF">GF</option>
-              </select>
-            </div>
-            
-            <div class="filter-group">
-              <label>📁 Folder</label>
-              <select id="filterFolder" class="filter-select" onchange="applyFilters()">
-                <option value="">Semua Folder</option>
-              </select>
-            </div>
-            
-            <button class="filter-reset-btn" onclick="resetFilters()">
-              🔄 Reset
+          <!-- View Toggle -->
+          <div class="catatan-view-toggle">
+            <button class="view-toggle-btn active" id="btnViewFolder" onclick="switchCatatanView('folder')">
+              📁 Lihat per Folder
+            </button>
+            <button class="view-toggle-btn" id="btnViewAll" onclick="switchCatatanView('all')">
+              📋 Semua Catatan
             </button>
           </div>
 
-          <!-- List Catatan -->
-          <div class="catatan-list" id="catatanList">
-            <div class="catatan-empty">
-              <div class="catatan-empty-icon">📭</div>
-              <p>Belum ada catatan. Yuk tulis catatan pertama!</p>
+          <!-- Folder View (default) -->
+          <div id="folderViewArea">
+            <!-- Breadcrumb (tampil saat di dalam folder) -->
+            <div class="catatan-breadcrumb" id="catatanBreadcrumb" style="display:none;">
+              <span class="breadcrumb-item" onclick="backToFolderView()">📁 Semua Folder</span>
+              <span class="breadcrumb-sep">›</span>
+              <span class="breadcrumb-current" id="breadcrumbFolderName"></span>
+            </div>
+            <!-- Grid folder cards -->
+            <div class="folder-view-grid" id="folderViewGrid"></div>
+            <!-- Catatan dalam folder (tersembunyi sampai folder diklik) -->
+            <div id="folderCatatanArea" style="display:none;">
+              <div class="catatan-list" id="folderCatatanList"></div>
+              <div class="load-more-container" id="loadMoreContainerFolder" style="display:none;">
+                <button class="load-more-btn" id="loadMoreBtnFolder" onclick="loadMoreFolderCatatan()">
+                  📥 Muat Lebih Banyak
+                </button>
+                <div class="load-more-info" id="loadMoreInfoFolder"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Catatan View (dengan filter) -->
+          <div id="allCatatanArea" style="display:none;">
+            <!-- Filters -->
+            <div class="catatan-filters">
+              <div class="filter-group">
+                <label>📅 Bulan</label>
+                <select id="filterMonth" class="filter-select" onchange="applyFilters()">
+                  <option value="">Semua Bulan</option>
+                  <option value="01">Januari</option>
+                  <option value="02">Februari</option>
+                  <option value="03">Maret</option>
+                  <option value="04">April</option>
+                  <option value="05">Mei</option>
+                  <option value="06">Juni</option>
+                  <option value="07">Juli</option>
+                  <option value="08">Agustus</option>
+                  <option value="09">September</option>
+                  <option value="10">Oktober</option>
+                  <option value="11">November</option>
+                  <option value="12">Desember</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label>📆 Tahun</label>
+                <select id="filterYear" class="filter-select" onchange="applyFilters()">
+                  <option value="">Semua Tahun</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label>👤 Penulis</label>
+                <select id="filterAuthor" class="filter-select" onchange="applyFilters()">
+                  <option value="">Semua</option>
+                  <option value="BF">BF</option>
+                  <option value="GF">GF</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label>📁 Folder</label>
+                <select id="filterFolder" class="filter-select" onchange="applyFilters()">
+                  <option value="">Semua Folder</option>
+                </select>
+              </div>
+
+              <button class="filter-reset-btn" onclick="resetFilters()">
+                🔄 Reset
+              </button>
+            </div>
+
+            <!-- List Catatan -->
+            <div class="catatan-list" id="catatanList">
+              <div class="catatan-empty">
+                <div class="catatan-empty-icon">📭</div>
+                <p>Belum ada catatan. Yuk tulis catatan pertama!</p>
+              </div>
+            </div>
+
+            <!-- Load More -->
+            <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+              <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreCatatan()">
+                📥 Muat Lebih Banyak
+              </button>
+              <div class="load-more-info" id="loadMoreInfo"></div>
             </div>
           </div>
 
@@ -3900,12 +4089,11 @@
 
         <div class="game-instructions" style="margin-top: 30px;">
           <h4>💡 Tentang Catatan Bersama:</h4>
-          <p>• Pilih nama (BF atau GF) sebelum menulis catatan</p>
-          <p>• Tulis catatan, pesan, atau reminder untuk kita berdua</p>
+          <p>• Catatan dikelompokkan per Folder — klik folder untuk lihat isinya</p>
+          <p>• Gunakan tombol 📋 Semua Catatan untuk lihat & filter semua catatan sekaligus</p>
+          <p>• Tambah folder baru via tombol ➕ di samping dropdown Folder</p>
+          <p>• Klik ⋮ (titik tiga) pada catatan untuk Copy, Edit, atau Hapus</p>
           <p>• Semua catatan tersinkron secara real-time dengan Firebase</p>
-          <p>• Klik ikon ⋮ (titik tiga) untuk Copy, Edit, atau Hapus catatan</p>
-          <p>• Filter catatan berdasarkan Bulan, Tahun, atau Penulis</p>
-          <p>• Maksimal 500 karakter per catatan</p>
           <p>• Tekan Ctrl+Enter untuk kirim catatan lebih cepat</p>
         </div>
       </div>
@@ -6351,6 +6539,13 @@
   let allCatatanData = [];
   let displayedCatatanCount = 10; // Jumlah catatan yang ditampilkan per load
   const LOAD_MORE_INCREMENT = 10; // Jumlah tambahan saat load more
+
+  // Folder-view state
+  let currentCatatanView = 'folder'; // 'folder' | 'all'
+  let activeFolderId = null;         // null = tampil grid folder, string = tampil isi folder
+  let activeFolderName = '';
+  let folderFilteredData = [];       // data catatan dalam folder yang sedang aktif
+  let displayedFolderCount = 10;
   
   // Tambah catatan baru
   async function addCatatan() {
@@ -6457,12 +6652,235 @@
         // Populate folder filter
         populateFolderFilter();
         
-        // Apply filters and render
-        applyFilters();
+        // Render sesuai view aktif
+        if (currentCatatanView === 'all') {
+          applyFilters();
+        } else {
+          refreshCurrentView();
+        }
       });
     });
   }
   
+  // ============================================
+  // 📁 FOLDER VIEW FUNCTIONS
+  // ============================================
+
+  // Switch antara view Folder dan view Semua Catatan
+  function switchCatatanView(view) {
+    currentCatatanView = view;
+    const folderArea = document.getElementById('folderViewArea');
+    const allArea = document.getElementById('allCatatanArea');
+    const btnFolder = document.getElementById('btnViewFolder');
+    const btnAll = document.getElementById('btnViewAll');
+
+    if (view === 'folder') {
+      folderArea.style.display = 'block';
+      allArea.style.display = 'none';
+      btnFolder.classList.add('active');
+      btnAll.classList.remove('active');
+      // Reset ke grid folder saat switch ke view ini
+      if (!activeFolderId) renderFolderGrid();
+    } else {
+      folderArea.style.display = 'none';
+      allArea.style.display = 'block';
+      btnFolder.classList.remove('active');
+      btnAll.classList.add('active');
+      applyFilters();
+    }
+  }
+
+  // Render grid kartu folder
+  function renderFolderGrid() {
+    const grid = document.getElementById('folderViewGrid');
+    const folderCatatanArea = document.getElementById('folderCatatanArea');
+    const breadcrumb = document.getElementById('catatanBreadcrumb');
+    if (!grid) return;
+
+    // Sembunyikan catatan-dalam-folder, tampilkan grid
+    folderCatatanArea.style.display = 'none';
+    breadcrumb.style.display = 'none';
+    grid.style.display = 'grid';
+    activeFolderId = null;
+
+    // Hitung catatan per folder
+    const folderCountMap = {};
+    let noneCount = 0;
+    allCatatanData.forEach(c => {
+      if (c.folderId) {
+        folderCountMap[c.folderId] = (folderCountMap[c.folderId] || 0) + 1;
+      } else {
+        noneCount++;
+      }
+    });
+
+    // Ambil data folder dari Firebase (sudah di-cache di allFoldersData)
+    database.ref('folders').once('value', (snap) => {
+      const folders = [];
+      if (snap.exists()) {
+        snap.forEach(child => {
+          folders.push({ id: child.key, ...child.val() });
+        });
+        folders.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      grid.innerHTML = '';
+
+      // Render folder cards
+      folders.forEach(folder => {
+        const count = folderCountMap[folder.id] || 0;
+        const card = document.createElement('div');
+        card.className = 'folder-view-card';
+        card.innerHTML = `
+          <span class="folder-view-icon">📁</span>
+          <div class="folder-view-name">${escapeHtml(folder.name)}</div>
+          <span class="folder-view-count">${count} catatan</span>
+        `;
+        card.onclick = () => openFolderView(folder.id, folder.name);
+        grid.appendChild(card);
+      });
+
+      // Card "Tanpa Folder"
+      if (noneCount > 0 || folders.length === 0) {
+        const noneCard = document.createElement('div');
+        noneCard.className = 'folder-view-card no-folder';
+        noneCard.innerHTML = `
+          <span class="folder-view-icon">📂</span>
+          <div class="folder-view-name">Tanpa Folder</div>
+          <span class="folder-view-count">${noneCount} catatan</span>
+        `;
+        noneCard.onclick = () => openFolderView('__none__', 'Tanpa Folder');
+        grid.appendChild(noneCard);
+      }
+
+      // Jika sama sekali tidak ada folder dan tidak ada catatan
+      if (folders.length === 0 && noneCount === 0) {
+        grid.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:50px 20px; opacity:0.5;">
+            <div style="font-size:48px; margin-bottom:12px;">📭</div>
+            <p>Belum ada catatan. Tulis catatan pertama!</p>
+          </div>
+        `;
+      }
+    });
+  }
+
+  // Buka isi catatan dalam satu folder
+  function openFolderView(folderId, folderName) {
+    activeFolderId = folderId;
+    activeFolderName = folderName;
+    displayedFolderCount = LOAD_MORE_INCREMENT;
+
+    const grid = document.getElementById('folderViewGrid');
+    const folderCatatanArea = document.getElementById('folderCatatanArea');
+    const breadcrumb = document.getElementById('catatanBreadcrumb');
+    const breadcrumbName = document.getElementById('breadcrumbFolderName');
+
+    // Sembunyikan grid, tampilkan isi folder
+    grid.style.display = 'none';
+    folderCatatanArea.style.display = 'block';
+    breadcrumb.style.display = 'flex';
+    breadcrumbName.textContent = folderName;
+
+    // Filter data sesuai folder
+    if (folderId === '__none__') {
+      folderFilteredData = allCatatanData.filter(c => !c.folderId);
+    } else {
+      folderFilteredData = allCatatanData.filter(c => c.folderId === folderId);
+    }
+
+    renderFolderCatatanList();
+  }
+
+  // Render catatan di dalam folder yang aktif
+  function renderFolderCatatanList() {
+    const list = document.getElementById('folderCatatanList');
+    list.innerHTML = '';
+
+    if (folderFilteredData.length === 0) {
+      list.innerHTML = `
+        <div class="catatan-empty">
+          <div class="catatan-empty-icon">📭</div>
+          <p>Folder ini masih kosong.</p>
+        </div>
+      `;
+      document.getElementById('loadMoreContainerFolder').style.display = 'none';
+      return;
+    }
+
+    const displayData = folderFilteredData.slice(0, displayedFolderCount);
+    displayData.forEach(catatan => {
+      const item = document.createElement('div');
+      item.className = 'catatan-item';
+      const authorIcon = catatan.author === 'BF' ? '👨' : '👩';
+      item.innerHTML = `
+        <div class="catatan-header">
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div class="catatan-author-badge">${authorIcon} ${escapeHtml(catatan.author || 'Anonymous')}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="catatan-timestamp">${catatan.date} • ${catatan.time}</div>
+            <div class="catatan-menu">
+              <button class="catatan-menu-btn" onclick="toggleCatatanMenu('${catatan.id}')">⋮</button>
+              <div class="catatan-dropdown" id="menu-${catatan.id}">
+                <div class="catatan-dropdown-item" onclick="copyCatatan('${catatan.id}')">📋 Copy</div>
+                <div class="catatan-dropdown-item has-submenu" onclick="toggleSubmenu(event,'${catatan.id}')">
+                  ✏️ Edit <span style="margin-left:auto;">▶</span>
+                  <div class="catatan-submenu" id="submenu-${catatan.id}">
+                    <div class="catatan-submenu-item" onclick="editCatatanAuthor('${catatan.id}')">👤 Edit Penulis</div>
+                    <div class="catatan-submenu-item" onclick="editCatatanText('${catatan.id}')">📝 Edit Catatan</div>
+                    <div class="catatan-submenu-item" onclick="editCatatanFolder('${catatan.id}')">📁 Edit Folder</div>
+                  </div>
+                </div>
+                <div class="catatan-dropdown-item delete" onclick="deleteCatatan('${catatan.id}')">🗑️ Hapus</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="catatan-text">${escapeHtml(catatan.text)}</div>
+      `;
+      list.appendChild(item);
+    });
+
+    // Load more
+    const lmContainer = document.getElementById('loadMoreContainerFolder');
+    const lmInfo = document.getElementById('loadMoreInfoFolder');
+    if (displayedFolderCount < folderFilteredData.length) {
+      lmContainer.style.display = 'block';
+      document.getElementById('loadMoreBtnFolder').disabled = false;
+      lmInfo.textContent = `Menampilkan ${displayedFolderCount} dari ${folderFilteredData.length} catatan`;
+    } else {
+      lmContainer.style.display = 'none';
+    }
+  }
+
+  // Load more catatan dalam folder
+  function loadMoreFolderCatatan() {
+    displayedFolderCount += LOAD_MORE_INCREMENT;
+    renderFolderCatatanList();
+  }
+
+  // Kembali ke grid folder dari dalam folder
+  function backToFolderView() {
+    activeFolderId = null;
+    activeFolderName = '';
+    renderFolderGrid();
+  }
+
+  // Apply filters juga refresh folder grid jika sedang di view folder
+  // (dipanggil saat data real-time update)
+  function refreshCurrentView() {
+    if (currentCatatanView === 'folder') {
+      if (activeFolderId) {
+        // Refresh isi folder yang sedang dibuka
+        openFolderView(activeFolderId, activeFolderName);
+      } else {
+        renderFolderGrid();
+      }
+    }
+    // View 'all' di-refresh via applyFilters() yang sudah dipanggil di loadCatatan
+  }
+
   // Apply filters
   function applyFilters() {
     const monthFilter = document.getElementById('filterMonth').value;
@@ -7423,6 +7841,8 @@
       loadSavedLetters();
       loadCatatan(); // Load catatan bersama
       loadFolders(); // Load folders untuk dropdown
+      // Default: tampilkan view folder
+      switchCatatanView('folder');
     }, 1000);
   });
 
